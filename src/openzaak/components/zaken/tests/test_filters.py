@@ -180,3 +180,24 @@ class ZaakFilterTests(JWTAuthMixin, APITestCase):
         self.assertEqual(
             response.data, {"count": 0, "next": None, "previous": None, "results": []}
         )
+
+    def test_filter_by_external_and_local_zaaktype(self):
+        # External
+        ZaakFactory.create(zaaktype="https://example.com/zaaktypen/123")
+        ZaakFactory.create(zaaktype="https://example.com/zaaktypen/456")
+        # Internal
+        zaak3 = ZaakFactory.create()
+        local_zaaktype_path = reverse(
+            "zaaktype-detail", kwargs={"uuid": zaak3.zaaktype.uuid}
+        )
+        local_zaaktype_url = f"http://testserver.com{local_zaaktype_path}"
+
+        response = self.client.get(
+            reverse(Zaak),
+            {"zaaktype__in": f"https://example.com/zaaktypen/123,{local_zaaktype_url}"},
+            HTTP_HOST="testserver.com",
+            **ZAAK_READ_KWARGS,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 2)
