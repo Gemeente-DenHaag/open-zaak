@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from django_filters import filters
+from django_filters import BooleanFilter, filters
 from django_loose_fk.filters import FkOrUrlFieldFilter
 from django_loose_fk.utils import get_resource_for_path
 from vng_api_common.filtersets import FilterSet
@@ -61,6 +61,16 @@ class ZaakFilter(FilterSet):
         help_text=_(
             mark_oas_difference("Het veld waarop de resultaten geordend worden.")
         ),
+    )
+    einddatum__isnull = BooleanFilter(
+        field_name="einddatum",
+        lookup_expr="isnull",
+        help_text="Filter on whether a case has a value for the end date (i.e. is the case closed or not).",
+    )
+    archiefactiedatum__isnull = BooleanFilter(
+        field_name="archiefactiedatum",
+        lookup_expr="isnull",
+        help_text="Filter on whether a case has a value for the archive date.",
     )
 
     class Meta:
