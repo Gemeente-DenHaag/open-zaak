@@ -2650,7 +2650,11 @@
                             "publicatiedatum",
                             "-publicatiedatum",
                             "archiefactiedatum",
-                            "-archiefactiedatum"
+                            "-archiefactiedatum",
+                            "registratiedatum",
+                            "-registratiedatum",
+                            "identificatie",
+                            "-identificatie"
                         ]
                     },
                     {
@@ -7250,7 +7254,7 @@
                 },
                 "ordering": {
                     "title": "Ordering",
-                    "description": "***AFWIJKING:** Het veld waarop de resultaten geordend worden.\n\nUitleg bij mogelijke waarden:\n\n* `startdatum` - Startdatum\n* `-startdatum` - Startdatum (descending)\n* `einddatum` - Einddatum\n* `-einddatum` - Einddatum (descending)\n* `publicatiedatum` - Publicatiedatum\n* `-publicatiedatum` - Publicatiedatum (descending)\n* `archiefactiedatum` - Archiefactiedatum\n* `-archiefactiedatum` - Archiefactiedatum (descending)",
+                    "description": "***AFWIJKING:** Het veld waarop de resultaten geordend worden.\n\nUitleg bij mogelijke waarden:\n\n* `startdatum` - Startdatum\n* `-startdatum` - Startdatum (descending)\n* `einddatum` - Einddatum\n* `-einddatum` - Einddatum (descending)\n* `publicatiedatum` - Publicatiedatum\n* `-publicatiedatum` - Publicatiedatum (descending)\n* `archiefactiedatum` - Archiefactiedatum\n* `-archiefactiedatum` - Archiefactiedatum (descending)\n* `registratiedatum` - Registratiedatum\n* `-registratiedatum` - Registratiedatum (descending)\n* `identificatie` - Identificatie\n* `-identificatie` - Identificatie (descending)",
                     "type": "string",
                     "enum": [
                         "startdatum",
@@ -7260,7 +7264,11 @@
                         "publicatiedatum",
                         "-publicatiedatum",
                         "archiefactiedatum",
-                        "-archiefactiedatum"
+                        "-archiefactiedatum",
+                        "registratiedatum",
+                        "-registratiedatum",
+                        "identificatie",
+                        "-identificatie"
                     ]
                 }
             }
