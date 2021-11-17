@@ -57,7 +57,14 @@ class ZaakFilter(FilterSet):
         ),
     )
     ordering = filters.OrderingFilter(
-        fields=("startdatum", "einddatum", "publicatiedatum", "archiefactiedatum",),
+        fields=(
+            "startdatum",
+            "einddatum",
+            "publicatiedatum",
+            "archiefactiedatum",
+            "registratiedatum",
+            "identificatie",
+        ),
         help_text=_(
             mark_oas_difference("Het veld waarop de resultaten geordend worden.")
         ),
