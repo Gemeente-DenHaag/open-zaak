@@ -567,14 +567,15 @@ class ZakenTests(JWTAuthMixin, APITestCase):
             "einddatum",
             "publicatiedatum",
             "archiefactiedatum",
+            "registratiedatum",
         ]
 
         for param in sorting_params:
             with self.subTest(param=param):
                 Zaak.objects.all().delete()
-                ZaakFactory.create(**{param: "2019-01-01"}, zaaktype=self.zaaktype)
-                ZaakFactory.create(**{param: "2019-03-01"}, zaaktype=self.zaaktype)
-                ZaakFactory.create(**{param: "2019-02-01"}, zaaktype=self.zaaktype)
+                ZaakFactory.create(**{param: date(2019, 1, 1)}, zaaktype=self.zaaktype)
+                ZaakFactory.create(**{param: date(2019, 3, 1)}, zaaktype=self.zaaktype)
+                ZaakFactory.create(**{param: date(2019, 2, 1)}, zaaktype=self.zaaktype)
                 url = reverse("zaak-list")
 
                 response = self.client.get(url, {"ordering": param}, **ZAAK_READ_KWARGS)
@@ -593,14 +594,15 @@ class ZakenTests(JWTAuthMixin, APITestCase):
             "einddatum",
             "publicatiedatum",
             "archiefactiedatum",
+            "registratiedatum",
         ]
 
         for param in sorting_params:
             with self.subTest(param=param):
                 Zaak.objects.all().delete()
-                ZaakFactory.create(**{param: "2019-01-01"}, zaaktype=self.zaaktype)
-                ZaakFactory.create(**{param: "2019-03-01"}, zaaktype=self.zaaktype)
-                ZaakFactory.create(**{param: "2019-02-01"}, zaaktype=self.zaaktype)
+                ZaakFactory.create(**{param: date(2019, 1, 1)}, zaaktype=self.zaaktype)
+                ZaakFactory.create(**{param: date(2019, 3, 1)}, zaaktype=self.zaaktype)
+                ZaakFactory.create(**{param: date(2019, 2, 1)}, zaaktype=self.zaaktype)
                 url = reverse("zaak-list")
 
                 response = self.client.get(
@@ -614,6 +616,44 @@ class ZakenTests(JWTAuthMixin, APITestCase):
                 self.assertEqual(data[0][param], "2019-03-01")
                 self.assertEqual(data[1][param], "2019-02-01")
                 self.assertEqual(data[2][param], "2019-01-01")
+
+    def test_sort_on_identificatie_ascending(self):
+        Zaak.objects.all().delete()
+        ZaakFactory.create(identificatie="ZAAK-1", zaaktype=self.zaaktype)
+        ZaakFactory.create(identificatie="ZAAK-2", zaaktype=self.zaaktype)
+        ZaakFactory.create(identificatie="ZAAK-3", zaaktype=self.zaaktype)
+        url = reverse("zaak-list")
+
+        response = self.client.get(
+            url, {"ordering": "identificatie"}, **ZAAK_READ_KWARGS
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.data["results"]
+
+        self.assertEqual(data[0]["identificatie"], "ZAAK-1")
+        self.assertEqual(data[1]["identificatie"], "ZAAK-2")
+        self.assertEqual(data[2]["identificatie"], "ZAAK-3")
+
+    def test_sort_on_identificatie_descending(self):
+        Zaak.objects.all().delete()
+        ZaakFactory.create(identificatie="ZAAK-1", zaaktype=self.zaaktype)
+        ZaakFactory.create(identificatie="ZAAK-2", zaaktype=self.zaaktype)
+        ZaakFactory.create(identificatie="ZAAK-3", zaaktype=self.zaaktype)
+        url = reverse("zaak-list")
+
+        response = self.client.get(
+            url, {"ordering": "-identificatie"}, **ZAAK_READ_KWARGS
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.data["results"]
+
+        self.assertEqual(data[0]["identificatie"], "ZAAK-3")
+        self.assertEqual(data[1]["identificatie"], "ZAAK-2")
+        self.assertEqual(data[2]["identificatie"], "ZAAK-1")
 
     def test_filter_max_vertrouwelijkheidaanduiding(self):
         zaak1 = ZaakFactory.create(
