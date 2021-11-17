@@ -65,12 +65,16 @@ class ZaakFilter(FilterSet):
     einddatum__isnull = BooleanFilter(
         field_name="einddatum",
         lookup_expr="isnull",
-        help_text="Filter on whether a case has a value for the end date (i.e. is the case closed or not).",
+        help_text=mark_oas_difference(
+            "Filter of een zaak een waarde heeft voor de einddatum"
+        ),
     )
     archiefactiedatum__isnull = BooleanFilter(
         field_name="archiefactiedatum",
         lookup_expr="isnull",
-        help_text="Filter on whether a case has a value for the archive date.",
+        help_text=mark_oas_difference(
+            "Filter of een zaak een waarde heeft voor de archiefactiedatum."
+        ),
     )
 
     class Meta:

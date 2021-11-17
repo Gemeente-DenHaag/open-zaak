@@ -2414,9 +2414,24 @@
                         "type": "string"
                     },
                     {
+                        "name": "bronorganisatie__in",
+                        "in": "query",
+                        "description": "Multiple values may be separated by commas.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
                         "name": "zaaktype",
                         "in": "query",
                         "description": "URL-referentie naar het ZAAKTYPE (in de Catalogi API).",
+                        "required": false,
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    {
+                        "name": "zaaktype__in",
+                        "in": "query",
+                        "description": "Multiple values may be separated by commas.",
                         "required": false,
                         "type": "string",
                         "format": "uri"
@@ -2606,6 +2621,20 @@
                             "zaakobjecten",
                             "zaakinformatieobjecten"
                         ]
+                    },
+                    {
+                        "name": "einddatum__isnull",
+                        "in": "query",
+                        "description": "***AFWIJKING:** Filter of een zaak een waarde heeft voor de einddatum",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "archiefactiedatum__isnull",
+                        "in": "query",
+                        "description": "***AFWIJKING:** Filter of een zaak een waarde heeft voor de archiefactiedatum.",
+                        "required": false,
+                        "type": "string"
                     },
                     {
                         "name": "ordering",
@@ -7030,9 +7059,21 @@
                     "type": "string",
                     "minLength": 1
                 },
+                "bronorganisatie__in": {
+                    "title": "Bronorganisatie  in",
+                    "description": "Multiple values may be separated by commas.",
+                    "type": "string",
+                    "minLength": 1
+                },
                 "zaaktype": {
                     "title": "Zaaktype",
                     "description": "URL-referentie naar het ZAAKTYPE (in de Catalogi API).",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "zaaktype__in": {
+                    "title": "Zaaktype  in",
+                    "description": "Multiple values may be separated by commas.",
                     "type": "string",
                     "minLength": 1
                 },
@@ -7194,6 +7235,18 @@
                         "zaakobjecten",
                         "zaakinformatieobjecten"
                     ]
+                },
+                "einddatum__isnull": {
+                    "title": "Einddatum  isnull",
+                    "description": "***AFWIJKING:** Filter of een zaak een waarde heeft voor de einddatum",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "archiefactiedatum__isnull": {
+                    "title": "Archiefactiedatum  isnull",
+                    "description": "***AFWIJKING:** Filter of een zaak een waarde heeft voor de archiefactiedatum.",
+                    "type": "string",
+                    "minLength": 1
                 },
                 "ordering": {
                     "title": "Ordering",
