@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from django_filters import filters
+from django_filters import BooleanFilter, filters
 from django_loose_fk.filters import FkOrUrlFieldFilter
 from django_loose_fk.utils import get_resource_for_path
 from vng_api_common.filtersets import FilterSet
@@ -62,13 +62,27 @@ class ZaakFilter(FilterSet):
             mark_oas_difference("Het veld waarop de resultaten geordend worden.")
         ),
     )
+    einddatum__isnull = BooleanFilter(
+        field_name="einddatum",
+        lookup_expr="isnull",
+        help_text=mark_oas_difference(
+            "Filter of een zaak een waarde heeft voor de einddatum"
+        ),
+    )
+    archiefactiedatum__isnull = BooleanFilter(
+        field_name="archiefactiedatum",
+        lookup_expr="isnull",
+        help_text=mark_oas_difference(
+            "Filter of een zaak een waarde heeft voor de archiefactiedatum."
+        ),
+    )
 
     class Meta:
         model = Zaak
         fields = {
             "identificatie": ["exact"],
-            "bronorganisatie": ["exact"],
-            "zaaktype": ["exact"],
+            "bronorganisatie": ["exact", "in"],
+            "zaaktype": ["exact", "in"],
             "archiefnominatie": ["exact", "in"],
             "archiefactiedatum": ["exact", "lt", "gt"],
             "archiefstatus": ["exact", "in"],

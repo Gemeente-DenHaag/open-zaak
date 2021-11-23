@@ -742,23 +742,26 @@ class ObjectInformatieObjectCMISQuerySet(
 
         return len(self)
 
-    def process_filters(self, data):
+    def process_filters(self, *args, **kwargs):
+        filters = kwargs
+        for filter in args:
+            filters[filter[0]] = filter[1]
 
-        converted_data = {}
+        converted_filters = {}
 
-        if data.get("object_type"):
-            object_type = data.pop("object_type")
-            if data.get(object_type):
-                relation_object = data.pop(object_type)
+        if filters.get("object_type"):
+            object_type = filters.pop("object_type")
+            if filters.get(object_type):
+                relation_object = filters.pop(object_type)
             else:
-                relation_object = data.pop("object")
+                relation_object = filters.pop("object")
             relation_url = get_object_url(relation_object)
             if relation_url is None:
                 relation_url = make_absolute_uri(reverse(relation_object))
-            converted_data["object_type"] = object_type
-            converted_data[f"{object_type}"] = relation_url
+            converted_filters["object_type"] = object_type
+            converted_filters[f"{object_type}"] = relation_url
 
-        for key, value in data.items():
+        for key, value in filters.items():
             split_key = key.split("__")
             split_key[0] = split_key[0].strip("_")
             if len(split_key) > 1 and split_key[1] not in ["exact", "in"]:
@@ -774,16 +777,16 @@ class ObjectInformatieObjectCMISQuerySet(
                 value = list_value
 
             if split_key[0] in ["besluit", "zaak"]:
-                converted_data[split_key[0]] = make_absolute_uri(reverse(value))
+                converted_filters[split_key[0]] = make_absolute_uri(reverse(value))
             elif split_key[0] in ["besluit_url", "zaak_url"]:
-                converted_data[split_key[0].split("_")[0]] = value
+                converted_filters[split_key[0].split("_")[0]] = value
             else:
-                converted_data[split_key[0]] = value
+                converted_filters[split_key[0]] = value
 
-        return converted_data
+        return converted_filters
 
     def create(self, **kwargs):
-        data = self.process_filters(kwargs)
+        data = self.process_filters(**kwargs)
 
         related_zaak_url = data.get("zaak")
         related_besluit_url = data.get("besluit")
@@ -829,7 +832,7 @@ class ObjectInformatieObjectCMISQuerySet(
         return obj.delete()
 
     def filter(self, *args, **kwargs):
-        filters = self.process_filters(kwargs)
+        filters = self.process_filters(*args, **kwargs)
 
         if filters.get("object_type"):
             filters.pop("object_type")

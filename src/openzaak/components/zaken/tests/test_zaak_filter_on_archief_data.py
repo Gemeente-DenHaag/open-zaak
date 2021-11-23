@@ -51,3 +51,32 @@ class US345TestCase(JWTAuthMixin, APITestCase):
         data = response.json()["results"]
         self.assertEqual(len(data), 1)
         self.assertTrue(data[0]["url"].endswith(str(zaak_1.uuid)))
+
+    def test_filter_on_empty_einddatum_and_archiefactiedatum(self):
+        zaak_1 = ZaakFactory.create(
+            einddatum=date(2010, 1, 1),
+            archiefnominatie=Archiefnominatie.blijvend_bewaren,
+            archiefstatus=Archiefstatus.nog_te_archiveren,
+        )
+        ZaakFactory.create(
+            archiefnominatie=Archiefnominatie.vernietigen,
+            archiefactiedatum=date(2010, 1, 1),
+            archiefstatus=Archiefstatus.nog_te_archiveren,
+        )
+
+        zaak_list_url = get_operation_url("zaak_list")
+
+        query_params = {
+            "archiefactiedatum__isnull": True,
+            "einddatum__isnull": False,
+        }
+        query_params = urlencode(query_params, quote_via=quote_plus)
+
+        response = self.client.get(
+            f"{zaak_list_url}?{query_params}", **ZAAK_WRITE_KWARGS
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+        data = response.json()["results"]
+        self.assertEqual(len(data), 1)
+        self.assertTrue(data[0]["url"].endswith(str(zaak_1.uuid)))
