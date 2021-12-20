@@ -29,7 +29,7 @@ class GebruiksrechtenTests(JWTAuthMixin, APICMISTestCase):
 
         eio_detail = self.client.get(eio_url)
 
-        self.assertIsNone(eio_detail.json()["indicatieGebruiksrecht"])
+        self.assertFalse(eio_detail.json()["indicatieGebruiksrecht"])
 
         response = self.client.post(
             url,

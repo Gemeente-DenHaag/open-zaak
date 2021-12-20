@@ -46,6 +46,7 @@ class EnkelvoudigInformatieObjectFactory(factory.django.DjangoModelFactory):
     inhoud = factory.django.FileField(data=b"some data", filename="file.bin")
     informatieobjecttype = factory.SubFactory(InformatieObjectTypeFactory)
     vertrouwelijkheidaanduiding = VertrouwelijkheidsAanduiding.openbaar
+    indicatie_gebruiksrecht = False
 
     class Meta:
         model = "documenten.EnkelvoudigInformatieObject"

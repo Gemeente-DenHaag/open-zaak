@@ -112,7 +112,7 @@ class EnkelvoudigInformatieObjectAPITests(JWTAuthMixin, APITestCase):
                 "ontvangstdatum": None,
                 "verzenddatum": None,
                 "ondertekening": {"soort": "", "datum": None},
-                "indicatieGebruiksrecht": None,
+                "indicatieGebruiksrecht": False,
                 "status": "",
                 "locked": False,
             }
@@ -255,7 +255,7 @@ class EnkelvoudigInformatieObjectAPITests(JWTAuthMixin, APITestCase):
             "ontvangstdatum": None,
             "verzenddatum": None,
             "ondertekening": {"soort": "", "datum": None},
-            "indicatieGebruiksrecht": None,
+            "indicatieGebruiksrecht": False,
             "vertrouwelijkheidaanduiding": "openbaar",
             "integriteit": {"algoritme": "", "waarde": "", "datum": None},
             "informatieobjecttype": f"http://testserver{reverse(test_object.informatieobjecttype)}",
