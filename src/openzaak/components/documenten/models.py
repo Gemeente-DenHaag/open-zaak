@@ -134,14 +134,14 @@ class InformatieObject(models.Model):
     )
     indicatie_gebruiksrecht = models.NullBooleanField(
         _("indicatie gebruiksrecht"),
-        blank=True,
-        default=None,
+        default=False,
         help_text=_(
             "Indicatie of er beperkingen gelden aangaande het gebruik van "
             "het informatieobject anders dan raadpleging. Dit veld mag "
             "`null` zijn om aan te geven dat de indicatie nog niet bekend is. "
             "Als de indicatie gezet is, dan kan je de gebruiksrechten die "
-            "van toepassing zijn raadplegen via de GEBRUIKSRECHTen resource."
+            "van toepassing zijn raadplegen via de GEBRUIKSRECHTen resource. "
+            "Standaard waarde is `False`"
         ),
     )
 
