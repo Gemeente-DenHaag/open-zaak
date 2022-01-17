@@ -1,11 +1,14 @@
 # SPDX-License-Identifier: EUPL-1.2
-# Copyright (C) 2019 - 2020 Dimpact
+# Copyright (C) 2019 - 2022 Dimpact
 from typing import Dict, Tuple
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.db import models
+from django.http.request import validate_host
 
 from django_loose_fk.virtual_models import ProxyMixin
+from vng_api_common.scopes import Scope
 
 from openzaak.components.besluiten.models import Besluit
 from openzaak.utils.query import BlockChangeMixin, LooseFkAuthorizationsFilterMixin
@@ -39,6 +42,28 @@ class ZaakAuthorizationsFilterMixin(LooseFkAuthorizationsFilterMixin):
 
     vertrouwelijkheidaanduiding_use = True
     loose_fk_field = "zaaktype"
+
+    def filter_for_roles(self, scope: Scope, roles: models.QuerySet) -> models.QuerySet:
+        roles_local = []
+        roles_external = []
+        allowed_hosts = settings.ALLOWED_HOSTS
+        for role in roles:
+            # TODO no scope checking yet
+            # test if this authorization has the scope that's needed
+            # if not scope.is_contained_in(role.scopes):
+            #     continue
+
+            loose_fk_host = urlparse(getattr(role, self.loose_fk_field)).hostname
+            if validate_host(loose_fk_host, allowed_hosts):
+                roles_local.append(role)
+            else:
+                roles_external.append(role)
+
+        ids_local = self.ids_by_auth(scope, roles_local, local=True)
+        ids_external = self.ids_by_auth(scope, roles_external, local=False)
+        queryset = self.filter(pk__in=ids_local.union(ids_external))
+
+        return queryset
 
 
 class ZaakQuerySet(ZaakAuthorizationsFilterMixin, models.QuerySet):

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: EUPL-1.2
-# Copyright (C) 2019 - 2020 Dimpact
+# Copyright (C) 2019 - 2022 Dimpact
 from typing import List, Union
 
 from django.db import models
@@ -13,6 +13,7 @@ from vng_api_common.middleware import (
     JWTAuth as _JWTAuth,
 )
 
+from openzaak.components.autorisaties.models import Role
 from openzaak.utils.constants import COMPONENT_MAPPING
 
 
@@ -35,6 +36,11 @@ class JWTAuth(_JWTAuth):
         if not hasattr(self, "_applicaties_qs"):
             self._applicaties_qs = super().applicaties
         return self._applicaties_qs
+
+    @property
+    def roles(self) -> models.QuerySet:
+        role_slugs = self.payload.get("roles", [])
+        return Role.objects.filter(slug__in=role_slugs)
 
     def _request_auth(self) -> list:
         return []

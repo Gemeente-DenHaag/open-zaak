@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: EUPL-1.2
-# Copyright (C) 2019 - 2020 Dimpact
+# Copyright (C) 2019 - 2022 Dimpact
 class ListFilterByAuthorizationsMixin:
     """
     Filter list-action data by the authorizations configured.
@@ -39,4 +39,11 @@ class ListFilterByAuthorizationsMixin:
         component = base.model._meta.app_label
         authorizations = self.request.jwt_auth.get_autorisaties(component)
 
-        return base.filter_for_authorizations(scope_needed, authorizations)
+        filtered_queryset = base.filter_for_authorizations(scope_needed, authorizations)
+
+        if self.request.jwt_auth.roles:
+            filtered_queryset = filtered_queryset.filter_for_roles(
+                scope_needed, self.request.jwt_auth.roles
+            )
+
+        return filtered_queryset

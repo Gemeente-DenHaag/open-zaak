@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: EUPL-1.2
-# Copyright (C) 2019 - 2020 Dimpact
+# Copyright (C) 2019 - 2022 Dimpact
 from collections import defaultdict
 
 from django.apps import apps
@@ -154,3 +154,29 @@ class AutorisatieSpec(models.Model):
         changed = {autorisatie.applicatie for autorisatie in (to_delete + _to_add)}
         for applicatie in changed:
             send_applicatie_changed_notification(applicatie)
+
+
+class Role(models.Model):
+    slug = models.SlugField(
+        max_length=255, help_text=_("Unieke naam van de rol"), unique=True,
+    )
+    name = models.CharField(
+        max_length=255, help_text=_("Gebruikersvriendelijke naam van de rol")
+    )
+    zaaktype = models.URLField(
+        _("zaaktype"),
+        help_text=_("URL naar het zaaktype waarop de autorisatie van toepassing is."),
+        max_length=1000,
+        blank=True,
+    )
+    max_vertrouwelijkheidaanduiding = VertrouwelijkheidsAanduidingField(
+        help_text=_("Maximaal toegelaten vertrouwelijkheidaanduiding (inclusief)."),
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = _("rol")
+        verbose_name_plural = _("rollen")
+
+    def __str__(self):
+        return self.name
