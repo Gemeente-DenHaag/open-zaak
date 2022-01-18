@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: EUPL-1.2
-# Copyright (C) 2019 - 2020 Dimpact
+# Copyright (C) 2019 - 2022 Dimpact
 import factory.fuzzy
 from vng_api_common.constants import ComponentTypes, VertrouwelijkheidsAanduiding
 
@@ -35,3 +35,8 @@ class AutorisatieSpecFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "autorisaties.AutorisatieSpec"
+
+
+class RoleFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "autorisaties.Role"
