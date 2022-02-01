@@ -33,8 +33,3 @@ class ZaakNestedAuthRequired(ZaakAuthRequired):
     def has_object_permission(self, request: Request, view, obj) -> bool:
         # all checks are made in has_permission stage
         return True
-
-
-class ZaakAudittrailAuthRequired(ZaakNestedAuthRequired):
-    def get_component(self, view) -> str:
-        return "zaken"
