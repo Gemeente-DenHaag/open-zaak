@@ -1858,3 +1858,61 @@ class ZaakAuditTrailRetrieveRoleTests(JWTAuthMixin, TypeCheckMixin, APITestCase)
         response = self.client.get(audit_url)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+@tag("api_roles")
+@override_settings(ALLOWED_HOSTS=["testserver"])
+class ZaakListSuperuserRoleTests(JWTAuthMixin, TypeCheckMixin, APITestCase):
+    scopes = [SCOPE_ZAKEN_ALLES_LEZEN, SCOPE_ZAKEN_BIJWERKEN]
+    component = ComponentTypes.zrc
+    max_vertrouwelijkheidaanduiding = VertrouwelijkheidsAanduiding.confidentieel
+    heeft_alle_autorisaties = True
+
+    def setUp(self):
+        super().setUp()
+        token = generate_jwt_auth(
+            self.client_id,
+            self.secret,
+            user_id=self.user_id,
+            user_representation=self.user_representation,
+            roles=["role1"],
+        )
+        self.client.credentials(HTTP_AUTHORIZATION=token)
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.zaaktype = ZaakTypeFactory.create(concept=False)
+        cls.zaaktype2 = ZaakTypeFactory.create(concept=False)
+        super().setUpTestData()
+
+    def test_zaak_list_permissions_cannot_exceed_application_zaaktypen(self):
+        zaaktype3 = ZaakTypeFactory.create()
+        zaaktype_url3 = f"http://testserver{reverse(zaaktype3)}"
+        RoleFactory.create(
+            name="Role 1",
+            slug="role1",
+            zaaktype=zaaktype_url3,
+            max_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduiding.vertrouwelijk,
+            scopes=[SCOPE_ZAKEN_ALLES_LEZEN],
+            component=ComponentTypes.zrc,
+        )
+
+        # Should appear
+        ZaakFactory.create(
+            zaaktype=zaaktype3,
+            vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduiding.openbaar,
+        )
+
+        url = reverse("zaak-list")
+
+        response = self.client.get(url, **ZAAK_READ_KWARGS)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.data["results"]
+
+        self.assertEqual(len(results), 1)
+
+        data = results[0]
+
+        self.assertEqual(data["zaaktype"], zaaktype_url3)
