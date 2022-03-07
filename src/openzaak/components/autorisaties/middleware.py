@@ -79,7 +79,7 @@ class JWTAuth(_JWTAuth):
         superuser_applications = [
             app for app in self.applicaties if app.heeft_alle_autorisaties
         ]
-        if any(superuser_applications):
+        if any(superuser_applications) and not self.roles.exists():
             return True
 
         if not init_component:
@@ -102,8 +102,10 @@ class JWTAuth(_JWTAuth):
         for autorisatie in autorisaties:
             scopes_provided.update(autorisatie.scopes)
 
+        # Ignore autorisatie scopes for superuser applications with a role
+        # supplied
         scopes_in_autorisaties = scopes.is_contained_in(list(scopes_provided))
-        if not scopes_in_autorisaties:
+        if not scopes_in_autorisaties and not any(superuser_applications):
             return False
 
         roles = self.get_roles(init_component)
