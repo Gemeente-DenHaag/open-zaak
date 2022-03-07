@@ -296,7 +296,7 @@ jinja2==2.11.3
     #   django-silk
     #   openshift
     #   sphinx
-josepy==1.8.0
+josepy==1.12.0
     # via
     #   -r requirements/ci.txt
     #   mozilla-django-oidc
@@ -318,7 +318,7 @@ mccabe==0.6.1
     # via
     #   -r requirements/ci.txt
     #   flake8
-mozilla-django-oidc-db==0.7.2
+git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@4425d4d941c7a3183d6afc47b1e4e4e6e874dc38#egg=mozilla-django-oidc-db
     # via -r requirements/ci.txt
 mozilla-django-oidc==1.2.4
     # via
