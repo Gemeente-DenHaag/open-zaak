@@ -8,6 +8,8 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from django.views.generic.base import TemplateView
 
+from mozilla_django_oidc_db.views import AdminLoginFailure
+
 from openzaak.utils.views import ViewConfigView
 
 handler500 = "openzaak.utils.views.server_error"
@@ -15,6 +17,7 @@ handler500 = "openzaak.utils.views.server_error"
 urlpatterns = [
     path("admin/config/", include("openzaak.config.admin_urls")),
     path("admin/", admin.site.urls),
+    path("admin/login/failure/", AdminLoginFailure.as_view(), name="admin-oidc-error"),
     path("", TemplateView.as_view(template_name="main.html"), name="home"),
     path("view-config/", ViewConfigView.as_view(), name="view-config"),
     # separate apps
