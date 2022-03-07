@@ -22,7 +22,7 @@ django-markup
 django-redis
 django-privates
 django-relativedelta
-mozilla-django-oidc-db
+git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@4425d4d941c7a3183d6afc47b1e4e4e6e874dc38#egg=mozilla-django-oidc-db
 
 # Admin and UI libraries
 django-admin-index

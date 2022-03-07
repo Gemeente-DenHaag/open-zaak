@@ -167,13 +167,13 @@ itypes==1.1.0
     # via coreapi
 jinja2==2.11.3
     # via coreschema
-josepy==1.8.0
+josepy==1.12.0
     # via mozilla-django-oidc
 markdown==3.0.1
     # via -r requirements/base.in
 markupsafe==1.1.1
     # via jinja2
-mozilla-django-oidc-db==0.7.2
+git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@4425d4d941c7a3183d6afc47b1e4e4e6e874dc38#egg=mozilla-django-oidc-db
     # via -r requirements/base.in
 mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
