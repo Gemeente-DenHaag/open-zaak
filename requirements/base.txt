@@ -197,7 +197,9 @@ pyjwt==1.6.4
     #   gemma-zds-client
     #   vng-api-common
 pyopenssl==20.0.1
-    # via josepy
+    # via
+    #   josepy
+    #   zgw-consumers
 pyparsing==2.4.7
     # via
     #   httplib2
@@ -277,7 +279,7 @@ git+https://github.com/VNG-Realisatie/vng-api-common.git@2e97d27b08ce4f5093be65e
     # via
     #   -r requirements/base.in
     #   drc-cmis
-zgw-consumers==0.17.1
+zgw-consumers==0.18.0
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:
