@@ -1994,3 +1994,85 @@ class IncorrectRoleTests(JWTAuthMixin, TypeCheckMixin, APITestCase):
         self.assertEqual(response1.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response2.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response3.status_code, status.HTTP_403_FORBIDDEN)
+
+
+@tag("api_roles")
+@override_settings(ALLOWED_HOSTS=["testserver"])
+class RoleCustomClaimPathTests(JWTAuthMixin, TypeCheckMixin, APITestCase):
+    scopes = [SCOPE_ZAKEN_ALLES_LEZEN, SCOPE_ZAKEN_BIJWERKEN]
+    component = ComponentTypes.zrc
+    max_vertrouwelijkheidaanduiding = VertrouwelijkheidsAanduiding.confidentieel
+
+    def setUp(self):
+        super().setUp()
+        token = generate_jwt_auth(
+            self.client_id,
+            self.secret,
+            user_id=self.user_id,
+            user_representation=self.user_representation,
+            realm_access={"roles": ["role1"]},
+        )
+        self.client.credentials(HTTP_AUTHORIZATION=token)
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.zaaktype = ZaakTypeFactory.create(concept=False)
+        cls.zaaktype2 = ZaakTypeFactory.create(concept=False)
+        super().setUpTestData()
+
+        Autorisatie.objects.create(
+            applicatie=cls.applicatie,
+            component=cls.component,
+            scopes=cls.scopes,
+            zaaktype=cls.check_for_instance(cls.zaaktype2),
+            max_vertrouwelijkheidaanduiding=cls.max_vertrouwelijkheidaanduiding,
+        )
+
+    @override_settings(RBAC_ROLE_CLAIM_PATH="realm_access.roles")
+    def test_zaakeigenschappen_list_custom_role_claim_path(self):
+        """
+        Verify that the path containing the roles in the JWT can be modified
+        with the `RBAC_ROLE_CLAIM_PATH` setting
+        """
+        zaaktype_url = f"http://testserver{reverse(self.zaaktype)}"
+
+        RoleFactory.create(
+            name="Role 1",
+            slug="role1",
+            zaaktype=zaaktype_url,
+            max_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduiding.vertrouwelijk,
+            scopes=[SCOPE_ZAKEN_ALLES_LEZEN],
+            component=ComponentTypes.zrc,
+        )
+
+        zaak1 = ZaakFactory.create(
+            zaaktype=self.zaaktype,
+            vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduiding.vertrouwelijk,
+        )
+        ZaakEigenschapFactory.create_batch(3, zaak=zaak1)
+
+        zaak2 = ZaakFactory.create(
+            zaaktype=self.zaaktype,
+            vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduiding.confidentieel,
+        )
+        ZaakEigenschapFactory.create_batch(3, zaak=zaak2)
+
+        zaak3 = ZaakFactory.create(
+            zaaktype=self.zaaktype2,
+            vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduiding.openbaar,
+        )
+        ZaakEigenschapFactory.create_batch(3, zaak=zaak3)
+
+        url1 = get_operation_url("zaakeigenschap_list", zaak_uuid=zaak1.uuid)
+        url2 = get_operation_url("zaakeigenschap_list", zaak_uuid=zaak2.uuid)
+        url3 = get_operation_url("zaakeigenschap_list", zaak_uuid=zaak3.uuid)
+
+        response1 = self.client.get(url1)
+        response2 = self.client.get(url2)
+        response3 = self.client.get(url3)
+
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response1.json()), 3)
+
+        self.assertEqual(response2.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response3.status_code, status.HTTP_403_FORBIDDEN)
