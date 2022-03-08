@@ -610,3 +610,6 @@ CMIS_MAPPER_FILE = config(
 CMIS_URL_MAPPING_ENABLED = config("CMIS_URL_MAPPING_ENABLED", default=False)
 
 VNG_COMPONENTS_BRANCH = "stable/1.0.x"
+
+# Dotted path for the roles in the JWT
+RBAC_ROLE_CLAIM_PATH = os.getenv("RBAC_ROLE_CLAIM_PATH", "roles")

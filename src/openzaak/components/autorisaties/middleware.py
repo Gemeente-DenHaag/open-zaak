@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: EUPL-1.2
 # Copyright (C) 2019 - 2022 Dimpact
+import operator
+from functools import reduce
 from typing import List, Union
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -39,7 +42,12 @@ class JWTAuth(_JWTAuth):
 
     @property
     def roles_in_claims(self) -> List:
-        return self.payload.get("roles", [])
+        try:
+            return reduce(
+                operator.getitem, settings.RBAC_ROLE_CLAIM_PATH.split("."), self.payload
+            )
+        except KeyError:
+            return []
 
     @property
     def roles(self) -> models.QuerySet:
