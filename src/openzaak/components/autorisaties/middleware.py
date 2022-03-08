@@ -38,9 +38,12 @@ class JWTAuth(_JWTAuth):
         return self._applicaties_qs
 
     @property
+    def roles_in_claims(self) -> List:
+        return self.payload.get("roles", [])
+
+    @property
     def roles(self) -> models.QuerySet:
-        role_slugs = self.payload.get("roles", [])
-        return Role.objects.filter(slug__in=role_slugs)
+        return Role.objects.filter(slug__in=self.roles_in_claims)
 
     def get_roles(self, init_component: str) -> models.QuerySet:
         """
@@ -109,7 +112,7 @@ class JWTAuth(_JWTAuth):
             return False
 
         roles = self.get_roles(init_component)
-        if not roles:
+        if not self.roles_in_claims:
             return scopes_in_autorisaties
 
         scopes_provided_by_roles = set()
