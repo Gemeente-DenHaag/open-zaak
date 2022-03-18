@@ -13,7 +13,7 @@ from zgw_consumers.models import Service
 from openzaak.components.besluiten.models import Besluit
 from openzaak.utils import build_absolute_url
 
-from .models import ZaakBesluit, ZaakContactMoment
+from .models import ZaakBesluit, ZaakContactMoment, ZaakVerzoek
 
 logger = logging.getLogger(__name__)
 
@@ -128,3 +128,65 @@ def sync_contactmoment_relation(sender, instance: ZaakContactMoment = None, **kw
             marked_zcms = cache.get("zcms_marked_for_delete")
             marked_zcms.remove(instance.uuid)
             cache.set("zcms_marked_for_delete", marked_zcms)
+
+
+def sync_create_zaakverzoek(relation: ZaakVerzoek):
+    zaak_url = get_absolute_url("zaak-detail", relation.zaak.uuid)
+
+    logger.info("Zaak: %s", zaak_url)
+    logger.info("Verzoek: %s", relation.verzoek)
+
+    # Define the remote resource with which we need to interact
+    resource = "objectverzoek"
+    client = Client.from_url(relation.verzoek)
+    client.auth = APICredential.get_auth(relation.verzoek)
+
+    try:
+        response = client.create(
+            resource,
+            {"object": zaak_url, "verzoek": relation.verzoek, "objectType": "zaak",},
+        )
+    except Exception as exc:
+        logger.error(f"Could not create remote relation", exc_info=1)
+        raise SyncError(f"Could not create remote relation") from exc
+
+    # save ZaakBesluit url for delete signal
+    relation._objectverzoek = response["url"]
+    relation.save()
+
+
+def sync_delete_zaakverzoek(relation: ZaakVerzoek):
+    resource = "objectverzoek"
+    client = Client.from_url(relation.verzoek)
+    client.auth = APICredential.get_auth(relation.verzoek)
+
+    try:
+        client.delete(resource, url=relation._objectverzoek)
+    except Exception as exc:
+        logger.error(f"Could not delete remote relation", exc_info=1)
+        raise SyncError(f"Could not delete remote relation") from exc
+
+
+@receiver(
+    [post_save, pre_delete],
+    sender=ZaakVerzoek,
+    dispatch_uid="sync.sync_verzoek_relation",
+)
+def sync_verzoek_relation(sender, instance: ZaakVerzoek = None, **kwargs):
+    signal = kwargs["signal"]
+    if signal is post_save and not instance._objectverzoek:
+        sync_create_zaakverzoek(instance)
+    elif signal is pre_delete and instance._objectverzoek:
+        cache = caches["kcc_sync"]
+        marked_zvs = cache.get("zvs_marked_for_delete")
+        if marked_zvs:
+            cache.set("zvs_marked_for_delete", marked_zvs + [instance.uuid])
+        else:
+            cache.set("zvs_marked_for_delete", [instance.uuid])
+
+        try:
+            sync_delete_zaakverzoek(instance)
+        finally:
+            marked_zvs = cache.get("zvs_marked_for_delete")
+            marked_zvs.remove(instance.uuid)
+            cache.set("zvs_marked_for_delete", marked_zvs)

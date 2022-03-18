@@ -23,6 +23,7 @@ from ..models import (
     ZaakEigenschap,
     ZaakInformatieObject,
     ZaakObject,
+    ZaakVerzoek,
 )
 from .betrokkenen import (
     MedewerkerInline,
@@ -454,6 +455,10 @@ class ZaakContactMomentInline(admin.TabularInline):
     model = ZaakContactMoment
 
 
+class ZaakVerzoekInline(admin.TabularInline):
+    model = ZaakVerzoek
+
+
 class ZaakForm(forms.ModelForm):
     class Meta:
         model = Zaak
@@ -503,6 +508,7 @@ class ZaakAdmin(
         RelevanteZaakRelatieInline,
         ZaakBesluitInline,
         ZaakContactMomentInline,
+        ZaakVerzoekInline,
     ]
     raw_id_fields = ("_zaaktype", "hoofdzaak")
     viewset = "openzaak.components.zaken.api.viewsets.ZaakViewSet"
@@ -525,4 +531,11 @@ class ZaakAdmin(
 class ZaakContactMomentAdmin(admin.ModelAdmin):
     list_display = ["zaak", "contactmoment"]
     list_select_related = ["zaak"]
+    raw_id_fields = ["zaak"]
+
+
+@admin.register(ZaakVerzoek)
+class ZaakVerzoekMomentAdmin(admin.ModelAdmin):
+    list_display = ["zaak", "verzoek"]
+    # list_select_related = ["zaak"]
     raw_id_fields = ["zaak"]

@@ -61,6 +61,7 @@ from ...models import (
     ZaakEigenschap,
     ZaakInformatieObject,
     ZaakKenmerk,
+    ZaakVerzoek,
 )
 from ..validators import (
     CorrectZaaktypeValidator,
@@ -831,6 +832,37 @@ class ZaakContactMomentSerializer(serializers.HyperlinkedModelSerializer):
             # delete the object again
             ZaakContactMoment.objects.filter(
                 contactmoment=self.validated_data["contactmoment"],
+                zaak=self.validated_data["zaak"],
+            )._raw_delete("default")
+            raise serializers.ValidationError(
+                {api_settings.NON_FIELD_ERRORS_KEY: sync_error.args[0]}
+            ) from sync_error
+
+
+class ZaakVerzoekSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ZaakVerzoek
+        fields = ("url", "uuid", "zaak", "verzoek")
+        extra_kwargs = {
+            "url": {"lookup_field": "uuid"},
+            "uuid": {"read_only": True},
+            "zaak": {"lookup_field": "uuid"},
+            "verzoek": {
+                "validators": [
+                    ResourceValidator(
+                        "Verzoek", settings.VRC_API_SPEC, get_auth=get_auth
+                    )
+                ]
+            },
+        }
+
+    def save(self, **kwargs):
+        try:
+            return super().save(**kwargs)
+        except SyncError as sync_error:
+            # delete the object again
+            ZaakVerzoek.objects.filter(
+                verzoek=self.validated_data["verzoek"],
                 zaak=self.validated_data["zaak"],
             )._raw_delete("default")
             raise serializers.ValidationError(
