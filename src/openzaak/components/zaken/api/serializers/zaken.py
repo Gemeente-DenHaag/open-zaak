@@ -57,6 +57,7 @@ from ...models import (
     Resultaat,
     Rol,
     Status,
+    SubStatus,
     Zaak,
     ZaakBesluit,
     ZaakContactMoment,
@@ -72,6 +73,7 @@ from ..validators import (
     HoofdzaakValidator,
     NotSelfValidator,
     RolOccurenceValidator,
+    StatusBelongsToZaakValidator,
     UniekeIdentificatieValidator,
     ZaakArchiveIOsArchivedValidator,
 )
@@ -270,6 +272,45 @@ class StatusSerializer(serializers.HyperlinkedModelSerializer):
             # Save updated information on the ZAAK
             zaak.save(update_fields=_zaak_fields_changed)
 
+        return obj
+
+
+class SubStatusSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = SubStatus
+        fields = (
+            "url",
+            "uuid",
+            "zaak",
+            "status",
+            "omschrijving",
+            "tijdstip",
+            "doelgroep",
+        )
+        validators = [StatusBelongsToZaakValidator()]
+        extra_kwargs = {
+            "url": {"lookup_field": "uuid"},
+            "uuid": {"read_only": True},
+            "zaak": {"lookup_field": "uuid"},
+            "status": {"lookup_field": "uuid", "required": False},
+            "tijdstip": {"validators": [DateNotInFutureValidator()]},
+        }
+
+    def create(self, validated_data):
+        """
+        Set status if not explicitly passed
+        """
+        zaak = validated_data["zaak"]
+        status = validated_data.get("status")
+
+        if not status:
+            # FIXME for some reason, `zaak.status_set` is not ordered by
+            # `-datum_status_gezet` here
+            validated_data["status"] = zaak.status_set.order_by(
+                "-datum_status_gezet"
+            ).first()
+
+        obj = super().create(validated_data)
         return obj
 
 
