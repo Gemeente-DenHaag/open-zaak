@@ -27,10 +27,10 @@ info:
     * `zaaktype`: URL-referentie naar het ZAAKTYPE (in de Catalogi API).\n* `vertrouwelijkheidaanduiding`:\
     \ Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid\
     \ bestemd is.\n\n**Resources en acties**\n- `zaak`: create, update, destroy\n\
-    - `status`: create\n- `zaakobject`: create\n- `zaakinformatieobject`: create\n\
-    - `zaakeigenschap`: create\n- `klantcontact`: create\n- `rol`: create, destroy\n\
-    - `resultaat`: create, update, destroy\n- `zaakbesluit`: create\n- `zaakcontactmoment`:\
-    \ create\n\n\n**Handige links**\n\n* [API-documentatie](https://vng-realisatie.github.io/gemma-zaken/standaard/)\n\
+    - `status`: create\n- `substatus`: create\n- `zaakobject`: create\n- `zaakinformatieobject`:\
+    \ create\n- `zaakeigenschap`: create\n- `klantcontact`: create\n- `rol`: create,\
+    \ destroy\n- `resultaat`: create, update, destroy\n- `zaakbesluit`: create\n-\
+    \ `zaakcontactmoment`: create\n\n\n**Handige links**\n\n* [API-documentatie](https://vng-realisatie.github.io/gemma-zaken/standaard/)\n\
     * [Open Zaak documentatie](https://open-zaak.readthedocs.io/en/latest/)\n* [Zaakgericht\
     \ werken](https://www.vngrealisatie.nl/producten/api-standaarden-zaakgericht-werken)\n\
     * [Open Zaak GitHub](https://github.com/open-zaak/open-zaak)\n"
@@ -1149,6 +1149,208 @@ paths:
           $ref: '#/components/responses/500'
       tags:
       - statussen
+      security:
+      - JWT-Claims:
+        - zaken.lezen
+    parameters:
+    - name: uuid
+      in: path
+      description: Unieke resource identifier (UUID4)
+      required: true
+      schema:
+        type: string
+        format: uuid
+  /substatussen:
+    get:
+      operationId: substatus_list
+      summary: Alle SUBSTATUSsen van STATUSsen opvragen.
+      description: Deze lijst kan gefilterd wordt met query-string parameters.
+      parameters:
+      - name: zaak
+        in: query
+        description: URL-referentie naar de ZAAK.
+        required: false
+        schema:
+          type: string
+          format: uri
+      - name: doelgroep
+        in: query
+        description: Indicatie van van de zichtbaarheid van een substatus.
+        required: false
+        schema:
+          type: string
+          enum:
+          - betrokkenen
+          - intern
+      - name: page
+        in: query
+        description: Een pagina binnen de gepagineerde set resultaten.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          headers:
+            API-version:
+              schema:
+                type: string
+              description: 'Geeft een specifieke API-versie aan in de context van
+                een specifieke aanroep. Voorbeeld: 1.2.1.'
+          content:
+            application/json:
+              schema:
+                required:
+                - count
+                - results
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  next:
+                    type: string
+                    format: uri
+                    nullable: true
+                  previous:
+                    type: string
+                    format: uri
+                    nullable: true
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SubStatus'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '406':
+          $ref: '#/components/responses/406'
+        '409':
+          $ref: '#/components/responses/409'
+        '410':
+          $ref: '#/components/responses/410'
+        '415':
+          $ref: '#/components/responses/415'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+      tags:
+      - substatussen
+      security:
+      - JWT-Claims:
+        - zaken.lezen
+    post:
+      operationId: substatus_create
+      summary: Maak een SUBSTATUS aan bij een STATUS voor een ZAAK.
+      description: '**Er wordt gevalideerd op**
+
+        - geldigheid URL naar de ZAAK
+
+        - geldigheid URL naar de STATUS
+
+        - STATUS moet horen bij de ZAAK'
+      parameters:
+      - name: X-NLX-Logrecord-ID
+        in: header
+        description: Identifier of the request, traceable throughout the network
+        required: false
+        schema:
+          type: string
+      - name: X-Audit-Toelichting
+        in: header
+        description: Toelichting waarom een bepaald verzoek wordt gedaan
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubStatus'
+        required: true
+      responses:
+        '201':
+          description: Created
+          headers:
+            API-version:
+              schema:
+                type: string
+              description: 'Geeft een specifieke API-versie aan in de context van
+                een specifieke aanroep. Voorbeeld: 1.2.1.'
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL waar de resource leeft.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubStatus'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '406':
+          $ref: '#/components/responses/406'
+        '409':
+          $ref: '#/components/responses/409'
+        '410':
+          $ref: '#/components/responses/410'
+        '415':
+          $ref: '#/components/responses/415'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+      tags:
+      - substatussen
+      security:
+      - JWT-Claims:
+        - (zaken.aanmaken | zaken.statussen.toevoegen)
+    parameters: []
+  /substatussen/{uuid}:
+    get:
+      operationId: substatus_read
+      summary: Een specifieke SUBSTATUS bij een STATUS van een ZAAK opvragen.
+      description: Een specifieke SUBSTATUS bij een STATUS van een ZAAK opvragen.
+      responses:
+        '200':
+          description: OK
+          headers:
+            API-version:
+              schema:
+                type: string
+              description: 'Geeft een specifieke API-versie aan in de context van
+                een specifieke aanroep. Voorbeeld: 1.2.1.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubStatus'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '406':
+          $ref: '#/components/responses/406'
+        '409':
+          $ref: '#/components/responses/409'
+        '410':
+          $ref: '#/components/responses/410'
+        '415':
+          $ref: '#/components/responses/415'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+      tags:
+      - substatussen
       security:
       - JWT-Claims:
         - zaken.lezen
@@ -4211,6 +4413,57 @@ components:
             de status van een zaak.
           type: string
           maxLength: 1000
+    SubStatus:
+      required:
+      - zaak
+      - omschrijving
+      type: object
+      properties:
+        url:
+          title: Url
+          description: URL-referentie naar dit object. Dit is de unieke identificatie
+            en locatie van dit object.
+          type: string
+          format: uri
+          readOnly: true
+          maxLength: 1000
+          minLength: 1
+        uuid:
+          title: Uuid
+          description: Unieke resource identifier (UUID4)
+          type: string
+          format: uuid
+          readOnly: true
+        zaak:
+          title: Zaak
+          description: URL-referentie naar de ZAAK.
+          type: string
+          format: uri
+        status:
+          title: Status
+          description: URL-referentie naar de hoofdSTATUS.
+          type: string
+          format: uri
+          nullable: true
+        omschrijving:
+          title: Omschrijving
+          description: Een, voor de initiator van de zaak relevante, toelichting op
+            de substatus bij een hoofdstatus van een zaak.
+          type: string
+          maxLength: 200
+          minLength: 1
+        tijdstip:
+          title: Tijdstip
+          description: Het tijdstip waarop de STATUS de SUBSTATUS heeft verkregen.
+          type: string
+          format: date-time
+        doelgroep:
+          title: Doelgroep
+          description: Indicatie van van de zichtbaarheid van een substatus.
+          type: string
+          enum:
+          - betrokkenen
+          - intern
     ZaakContactMoment:
       required:
       - zaak
