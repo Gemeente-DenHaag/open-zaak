@@ -20,7 +20,7 @@ services:
       - "11231:8888"
 
   openzaak-alfresco-acs:  # access on http://localhost:11232/
-    image: openzaak/alfresco-content-services:1.0-SNAPSHOT
+    image: stevenbal/alfresco-content-services:1.0-SNAPSHOT
     environment:
       CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
       JAVA_OPTS : "

@@ -154,7 +154,7 @@ class URLMappingAPITests(JWTAuthMixin, APICMISTestCase):
 
         eio_detail = self.client.get(eio_url)
 
-        self.assertIsNone(eio_detail.json()["indicatieGebruiksrecht"])
+        self.assertFalse(eio_detail.json()["indicatieGebruiksrecht"])
 
         # Remove all available mappings
         UrlMapping.objects.all().delete()

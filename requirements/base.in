@@ -40,7 +40,7 @@ drf-writable-nested
 # vng-api-common<1.1
 git+https://github.com/VNG-Realisatie/vng-api-common.git@2e97d27b08ce4f5093be65e8c09d1070f7ccce08#egg=vng-api-common
 humanize
-drc-cmis
+git+https://github.com/stevenbal/cmis-adapter.git@f3ea4bdcee9da6801c3b321a88c1e8aac7d6ca28#egg=drc-cmis
 
 # WSGI servers & monitoring - production oriented
 uwsgi

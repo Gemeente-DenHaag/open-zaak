@@ -308,7 +308,7 @@ def get_eio_response(url, **overrides):
         "ontvangstdatum": None,
         "verzenddatum": None,
         "ondertekening": {"soort": "", "datum": None},
-        "indicatieGebruiksrecht": None,
+        "indicatieGebruiksrecht": False,
         "vertrouwelijkheidaanduiding": "openbaar",
         "integriteit": {"algoritme": "", "waarde": "", "datum": None},
         "informatieobjecttype": eio_type,
