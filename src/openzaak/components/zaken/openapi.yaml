@@ -2199,9 +2199,22 @@ paths:
         required: false
         schema:
           type: string
+      - name: bronorganisatie__in
+        in: query
+        description: Multiple values may be separated by commas.
+        required: false
+        schema:
+          type: string
       - name: zaaktype
         in: query
         description: URL-referentie naar het ZAAKTYPE (in de Catalogi API).
+        required: false
+        schema:
+          type: string
+          format: uri
+      - name: zaaktype__in
+        in: query
+        description: Multiple values may be separated by commas.
         required: false
         schema:
           type: string
@@ -2418,6 +2431,20 @@ paths:
           - rollen
           - zaakobjecten
           - zaakinformatieobjecten
+      - name: einddatum__isnull
+        in: query
+        description: '***AFWIJKING:** Filter of een zaak een waarde heeft voor de
+          einddatum'
+        required: false
+        schema:
+          type: string
+      - name: archiefactiedatum__isnull
+        in: query
+        description: '***AFWIJKING:** Filter of een zaak een waarde heeft voor de
+          archiefactiedatum.'
+        required: false
+        schema:
+          type: string
       - name: ordering
         in: query
         description: '***AFWIJKING:** Het veld waarop de resultaten geordend worden.'
@@ -2433,6 +2460,10 @@ paths:
           - -publicatiedatum
           - archiefactiedatum
           - -archiefactiedatum
+          - registratiedatum
+          - -registratiedatum
+          - identificatie
+          - -identificatie
       - name: page
         in: query
         description: Een pagina binnen de gepagineerde set resultaten.
@@ -6259,9 +6290,19 @@ components:
             en voldoen aan https://nl.wikipedia.org/wiki/Burgerservicenummer#11-proef
           type: string
           minLength: 1
+        bronorganisatie__in:
+          title: Bronorganisatie  in
+          description: Multiple values may be separated by commas.
+          type: string
+          minLength: 1
         zaaktype:
           title: Zaaktype
           description: URL-referentie naar het ZAAKTYPE (in de Catalogi API).
+          type: string
+          minLength: 1
+        zaaktype__in:
+          title: Zaaktype  in
+          description: Multiple values may be separated by commas.
           type: string
           minLength: 1
         archiefnominatie:
@@ -6520,6 +6561,18 @@ components:
           - rollen
           - zaakobjecten
           - zaakinformatieobjecten
+        einddatum__isnull:
+          title: Einddatum  isnull
+          description: '***AFWIJKING:** Filter of een zaak een waarde heeft voor de
+            einddatum'
+          type: string
+          minLength: 1
+        archiefactiedatum__isnull:
+          title: Archiefactiedatum  isnull
+          description: '***AFWIJKING:** Filter of een zaak een waarde heeft voor de
+            archiefactiedatum.'
+          type: string
+          minLength: 1
         ordering:
           title: Ordering
           description: '***AFWIJKING:** Het veld waarop de resultaten geordend worden.
@@ -6542,7 +6595,15 @@ components:
 
             * `archiefactiedatum` - Archiefactiedatum
 
-            * `-archiefactiedatum` - Archiefactiedatum (descending)'
+            * `-archiefactiedatum` - Archiefactiedatum (descending)
+
+            * `registratiedatum` - Registratiedatum
+
+            * `-registratiedatum` - Registratiedatum (descending)
+
+            * `identificatie` - Identificatie
+
+            * `-identificatie` - Identificatie (descending)'
           type: string
           enum:
           - startdatum
@@ -6553,6 +6614,10 @@ components:
           - -publicatiedatum
           - archiefactiedatum
           - -archiefactiedatum
+          - registratiedatum
+          - -registratiedatum
+          - identificatie
+          - -identificatie
     Wijzigingen:
       type: object
       properties:

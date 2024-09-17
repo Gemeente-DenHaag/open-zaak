@@ -3039,9 +3039,24 @@
                         "type": "string"
                     },
                     {
+                        "name": "bronorganisatie__in",
+                        "in": "query",
+                        "description": "Multiple values may be separated by commas.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
                         "name": "zaaktype",
                         "in": "query",
                         "description": "URL-referentie naar het ZAAKTYPE (in de Catalogi API).",
+                        "required": false,
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    {
+                        "name": "zaaktype__in",
+                        "in": "query",
+                        "description": "Multiple values may be separated by commas.",
                         "required": false,
                         "type": "string",
                         "format": "uri"
@@ -3273,6 +3288,20 @@
                         ]
                     },
                     {
+                        "name": "einddatum__isnull",
+                        "in": "query",
+                        "description": "***AFWIJKING:** Filter of een zaak een waarde heeft voor de einddatum",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "archiefactiedatum__isnull",
+                        "in": "query",
+                        "description": "***AFWIJKING:** Filter of een zaak een waarde heeft voor de archiefactiedatum.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
                         "name": "ordering",
                         "in": "query",
                         "description": "***AFWIJKING:** Het veld waarop de resultaten geordend worden.",
@@ -3286,7 +3315,11 @@
                             "publicatiedatum",
                             "-publicatiedatum",
                             "archiefactiedatum",
-                            "-archiefactiedatum"
+                            "-archiefactiedatum",
+                            "registratiedatum",
+                            "-registratiedatum",
+                            "identificatie",
+                            "-identificatie"
                         ]
                     },
                     {
@@ -7794,9 +7827,21 @@
                     "type": "string",
                     "minLength": 1
                 },
+                "bronorganisatie__in": {
+                    "title": "Bronorganisatie  in",
+                    "description": "Multiple values may be separated by commas.",
+                    "type": "string",
+                    "minLength": 1
+                },
                 "zaaktype": {
                     "title": "Zaaktype",
                     "description": "URL-referentie naar het ZAAKTYPE (in de Catalogi API).",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "zaaktype__in": {
+                    "title": "Zaaktype  in",
+                    "description": "Multiple values may be separated by commas.",
                     "type": "string",
                     "minLength": 1
                 },
@@ -7989,9 +8034,21 @@
                         "zaakinformatieobjecten"
                     ]
                 },
+                "einddatum__isnull": {
+                    "title": "Einddatum  isnull",
+                    "description": "***AFWIJKING:** Filter of een zaak een waarde heeft voor de einddatum",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "archiefactiedatum__isnull": {
+                    "title": "Archiefactiedatum  isnull",
+                    "description": "***AFWIJKING:** Filter of een zaak een waarde heeft voor de archiefactiedatum.",
+                    "type": "string",
+                    "minLength": 1
+                },
                 "ordering": {
                     "title": "Ordering",
-                    "description": "***AFWIJKING:** Het veld waarop de resultaten geordend worden.\n\nUitleg bij mogelijke waarden:\n\n* `startdatum` - Startdatum\n* `-startdatum` - Startdatum (descending)\n* `einddatum` - Einddatum\n* `-einddatum` - Einddatum (descending)\n* `publicatiedatum` - Publicatiedatum\n* `-publicatiedatum` - Publicatiedatum (descending)\n* `archiefactiedatum` - Archiefactiedatum\n* `-archiefactiedatum` - Archiefactiedatum (descending)",
+                    "description": "***AFWIJKING:** Het veld waarop de resultaten geordend worden.\n\nUitleg bij mogelijke waarden:\n\n* `startdatum` - Startdatum\n* `-startdatum` - Startdatum (descending)\n* `einddatum` - Einddatum\n* `-einddatum` - Einddatum (descending)\n* `publicatiedatum` - Publicatiedatum\n* `-publicatiedatum` - Publicatiedatum (descending)\n* `archiefactiedatum` - Archiefactiedatum\n* `-archiefactiedatum` - Archiefactiedatum (descending)\n* `registratiedatum` - Registratiedatum\n* `-registratiedatum` - Registratiedatum (descending)\n* `identificatie` - Identificatie\n* `-identificatie` - Identificatie (descending)",
                     "type": "string",
                     "enum": [
                         "startdatum",
@@ -8001,7 +8058,11 @@
                         "publicatiedatum",
                         "-publicatiedatum",
                         "archiefactiedatum",
-                        "-archiefactiedatum"
+                        "-archiefactiedatum",
+                        "registratiedatum",
+                        "-registratiedatum",
+                        "identificatie",
+                        "-identificatie"
                     ]
                 }
             }
